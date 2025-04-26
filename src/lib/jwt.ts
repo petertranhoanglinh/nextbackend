@@ -1,15 +1,19 @@
-import jwt from "jsonwebtoken";
+import { SignJWT, jwtVerify } from 'jose';
 
-const JWT_SECRET =  "default_secret";
-
-export const signToken = (payload: object) => {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: "1h" });
+const JWT_SECRET = "default_secret";
+const secret = new TextEncoder().encode(JWT_SECRET);
+export const signToken = async (payload: { [key: string]: unknown }) => {
+  return await new SignJWT(payload)
+    .setProtectedHeader({ alg: 'HS256' })
+    .setExpirationTime('1h')
+    .sign(secret);
 };
-
-export const verifyToken = (token: string) => {
+export const verifyToken = async (token: string) => {
   try {
-    return jwt.verify(token, JWT_SECRET);
+    const { payload } = await jwtVerify(token, secret);
+    return payload;
   } catch (err) {
+    console.error(err);
     return null;
   }
 };

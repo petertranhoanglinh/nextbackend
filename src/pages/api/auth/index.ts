@@ -20,7 +20,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    const token = signToken({
+    const token = await  signToken({
         userId: user.userId,
         username: user.username,
         email: user.email,
